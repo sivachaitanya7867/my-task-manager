@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    {% for post in posts %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">{{ post.title }}</h5>
+                <p class="card-text">{{ post.content }}</p>
+                {% if post.image_file %}
+                    <img src="{{ url_for('static', filename='uploads/post_images/' + post.image_file) }}" class="img-fluid" alt="Image">
+                {% endif %}
+                {% if post.video_file %}
+                    <video controls>
+                        <source src="{{ url_for('static', filename='uploads/post_videos/' + post.video_file) }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                {% endif %}
+                <p class="card-text"><small class="text-muted">Posted by {{ post.author.username }} on {{ post.date_posted.strftime('%Y-%m-%d') }}</small></p>
+                <div class="d-flex align-items-center mb-2">
+                    <button class="btn btn-outline-primary like-btn" data-post-id="{{ post.id }}" data-liked="{{ current_user.has_liked_post(post) }}">
+                        {{ 'Unlike' if current_user.has_liked_post(post) else 'Like' }}
+                    </button>
+                    <span class="like-count ms-2">{{ post.likes.count() }}</span> likes
+                </div>
+                <div class="mt-2">
+                    <form action="{{ url_for('comment_post', post_id=post.id) }}" method="POST">
+                        <div class="input-group">
+                            <input type="text" name="content" class="form-control" placeholder="Add a comment..." required>
+                            <button class="btn btn-primary" type="submit">Comment</button>
+                        </div>
+                    </form>
+                </div>
+                <ul class="list-group list-group-flush mt-2">
+                    {% for comment in post.comments %}
+                        <li class="list-group-item">
+                            <strong>{{ comment.author.username }}:</strong> {{ comment.content }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.like-btn').forEach(function(button) {
+            button.addEventListener('click', function() {
+                const postId = this.getAttribute('data-post-id');
+                const liked = this.getAttribute('data-liked') === 'true';
+                const url = liked ? `/post/${postId}/unlike` : `/post/${postId}/like`;
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        this.textContent = liked ? 'Like' : 'Unlike';
+                        this.setAttribute('data-liked', !liked);
+                        this.nextElementSibling.textContent = data.likes;
+                    }
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Follow Requests{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Follow Requests</h1>
+    {% if follow_requests %}
+        <ul class="list-group">
+            {% for request in follow_requests %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ request.sender.username }}
+                    <div>
+                        <form action="{{ url_for('accept_follow_request', request_id=request.id) }}" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to accept this follow request?');">
+                            <button type="submit" class="btn btn-success btn-sm">Accept</button>
+                        </form>
+                        <form action="{{ url_for('decline_follow_request', request_id=request.id) }}" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to decline this follow request?');">
+                            <button type="submit" class="btn btn-danger btn-sm">Decline</button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No follow requests.</p>
+    {% endif %}
+</div>
+{% endblock %}

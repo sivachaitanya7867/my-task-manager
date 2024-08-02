@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Home</h1>
+    <div class="row">
+        {% for post in posts %}
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                {% if post.image_file %}
+                <img src="{{ url_for('static', filename='uploads/post_images/' + post.image_file) }}" class="card-img-top" alt="Post Image">
+                {% endif %}
+
+                {% if post.video_file %}
+                <video width="100%" controls>
+                  <source src="{{ url_for('static', filename='uploads/post_videos/' + post.video_file) }}" type="video/mp4">
+                  Your browser does not support the video tag.
+                </video>
+                {% endif %}
+                
+                <div class="card-body">
+                    <h5 class="card-title">{{ post.title }}</h5>
+                    <p class="card-text">{{ post.content }}</p>
+                    <p class="card-text"><small class="text-muted">Posted by {{ post.author.username }} on {{ post.date_posted.strftime('%Y-%m-%d') }}</small></p>
+
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.has_liked_post(post) %}
+                            <form action="{{ url_for('unlike_post', post_id=post.id) }}" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-danger">Unlike</button>
+                            </form>
+                        {% else %}
+                            <form action="{{ url_for('like_post', post_id=post.id) }}" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-primary">Like</button>
+                            </form>
+                        {% endif %}
+                    {% endif %}
+                    
+                    <p class="card-text">Likes: {{ post.likes.count() }}</p>
+
+                    <div class="comments mt-3">
+                        <h6>Comments:</h6>
+                        {% for comment in post.comments %}
+                            <div class="comment mb-2">
+                                <strong>{{ comment.author.username }}:</strong> {{ comment.content }}
+                            </div>
+                        {% endfor %}
+
+                        {% if current_user.is_authenticated %}
+                        <form action="{{ url_for('comment_post', post_id=post.id) }}" method="post">
+                            {{ form.hidden_tag() }}
+                            <div class="form-group">
+                                <textarea class="form-control" name="content" rows="2" placeholder="Add a comment"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-success">Comment</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

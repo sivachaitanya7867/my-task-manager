@@ -1,0 +1,18 @@
+<!-- follow_requests.html -->
+{% extends "base.html" %}
+{% block content %}
+<h2>Follow Requests</h2>
+<ul>
+    {% for request in follow_requests %}
+    <li>
+        <a href="{{ url_for('profile', username=request.sender.username) }}">{{ request.sender.username }}</a>
+        <form action="{{ url_for('accept_follow_request', request_id=request.id) }}" method="post" style="display: inline;">
+            <button type="submit" class="btn btn-success">Accept</button>
+        </form>
+        <form action="{{ url_for('decline_follow_request', request_id=request.id) }}" method="post" style="display: inline;">
+            <button type="submit" class="btn btn-danger">Decline</button>
+        </form>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock content %}

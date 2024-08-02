@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<h1>Welcome to TechTalk</h1>
+{% if current_user.is_authenticated %}
+    <p>Hello, {{ current_user.username }}!</p>
+    <a href="{{ url_for('create_post') }}" class="btn btn-primary">Create a New Post</a>
+{% else %}
+    <p>Please <a href="{{ url_for('login') }}">log in</a> or <a href="{{ url_for('register') }}">sign up</a> to continue.</p>
+{% endif %}
+
+<h2>Latest Posts</h2>
+{% if posts %}
+    {% for post in posts %}
+        <div class="post mb-4">
+            <h3>{{ post.title }}</h3>
+            <p>{{ post.content|truncate(200) }}{% if post.content|length > 200 %}...{% endif %}</p>
+            {% if post.image_file %}
+                <img src="{{ url_for('static', filename='uploads/post_images/' ~ post.image_file) }}" alt="Post Image" class="img-fluid mb-2" style="max-width: 100%;">
+            {% endif %}
+            {% if post.video_file %}
+                <video controls class="mb-2" style="max-width: 100%;">
+                    <source src="{{ url_for('static', filename='uploads/post_videos/' ~ post.video_file) }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            {% endif %}
+            <p><small>Posted by {{ post.author.username }} on {{ post.date_posted.strftime('%Y-%m-%d %H:%M:%S') }}</small></p>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No posts yet.</p>
+{% endif %}
+{% endblock %}

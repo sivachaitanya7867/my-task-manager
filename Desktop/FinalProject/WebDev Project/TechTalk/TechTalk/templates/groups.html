@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}Groups{% endblock %}
+{% block content %}
+<div class="container mt-4">
+
+    {% if action == 'create' %}
+        <h2>Create a New Group</h2>
+        <form method="POST" action="{{ url_for('group', action='create') }}">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.name.label(class="form-label") }}
+                {{ form.name(class="form-control") }}
+            </div>
+            <div class="form-group">
+                {{ form.description.label(class="form-label") }}
+                {{ form.description(class="form-control") }}
+            </div>
+            <button type="submit" class="btn btn-primary">Create Group</button>
+        </form>
+    {% elif action == 'details' and group %}
+        <h2>{{ group.name }}</h2>
+        <p>{{ group.description }}</p>
+        
+        {% if current_user not in group.members %}
+            <form method="POST" action="{{ url_for('join_group', group_id=group.id) }}" style="display:inline;">
+                <button type="submit" class="btn btn-success">Join Group</button>
+            </form>
+        {% else %}
+            <form method="POST" action="{{ url_for('leave_group', group_id=group.id) }}" style="display:inline;">
+                <button type="submit" class="btn btn-danger">Leave Group</button>
+            </form>
+        {% endif %}
+
+        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#newPostForm" aria-expanded="false" aria-controls="newPostForm">
+            New Post
+        </button>
+
+        <div class="collapse mt-3" id="newPostForm">
+            <h4>Create a New Post</h4>
+            <form method="POST" enctype="multipart/form-data" action="{{ url_for('post_in_group', group_id=group.id) }}">
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    {{ form.title.label(class="form-label") }}
+                    {{ form.title(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.content.label(class="form-label") }}
+                    {{ form.content(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.image.label(class="form-label") }}
+                    {{ form.image(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.video.label(class="form-label") }}
+                    {{ form.video(class="form-control") }}
+                </div>
+                <button type="submit" class="btn btn-primary">Post</button>
+            </form>
+        </div>
+
+        <h4>Existing Posts:</h4>
+        {% for post in posts %}
+            <div class="media mb-4">
+                {% if post.image_file %}
+                    <img src="{{ url_for('static', filename='group_posts/' + post.image_file) }}" class="mr-3" alt="Post Image" style="width: 150px; height: auto;">
+                {% endif %}
+                <div class="media-body">
+                    <h5 class="mt-0">{{ post.title }}</h5>
+                    <p>{{ post.content }}</p>
+                    <p><small>Posted by {{ post.author.username }} on {{ post.date_posted.strftime('%Y-%m-%d %H:%M:%S') }}</small></p>
+                </div>
+            </div>
+        {% endfor %}
+    {% elif action == 'members' and group %}
+        <h2>Members of {{ group.name }}</h2>
+        <ul class="list-group">
+            {% for member in members %}
+                <li class="list-group-item">{{ member.username }}</li>
+            {% endfor %}
+        </ul>
+    {% elif action == 'list' %}
+        <h2>All Groups</h2>
+        <a href="{{ url_for('group', action='create') }}" class="btn btn-primary mb-4">Create New Group</a>
+        <ul class="list-group">
+            {% for group in groups %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <a href="{{ url_for('group', action='details', group_id=group.id) }}">{{ group.name }}</a>
+                    {% if current_user not in group.members %}
+                        <form method="POST" action="{{ url_for('join_group', group_id=group.id) }}" style="display:inline;">
+                            <button type="submit" class="btn btn-success btn-sm">Join</button>
+                        </form>
+                    {% else %}
+                        <form method="POST" action="{{ url_for('leave_group', group_id=group.id) }}" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm">Leave</button>
+                        </form>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if action != 'list' %}
+        <a href="{{ url_for('group', action='list') }}" class="btn btn-secondary mt-4">Back to Groups List</a>
+    {% endif %}
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+{% endblock %}
