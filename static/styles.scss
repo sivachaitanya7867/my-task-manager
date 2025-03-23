@@ -1,0 +1,83 @@
+// creating a set of color variables
+$primary_color: #0056b3;
+$primary_hover_color: #007bff;
+$success_color: #28a745;
+$success_hover_color: #2fb455;
+$title_color: #333;
+$bg_color: wheat;
+
+body { //targeting the full body first
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: $bg_color;
+}
+
+
+.content {
+    max-width: 800px;
+    margin: 50px auto; //50px above and below, and auto align at center for left and right
+    padding: 20px; //adds space inside the element, between content and element's border.
+    background-color: #fff;
+    border-radius: 10px; //Makes the corners of the element rounded.
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    //adds a shadow around the element
+    //horizontal and vertical offset: 0, blur->10px.
+    //rgba(0,0,0,0.1)->Slightly transparent black color (0.1 is 10% opacity)
+    text-align: center;
+
+    h1 { // all h1 WITH IN the .content class
+        color: $primary_color;
+        text-align: center;
+    }
+
+    table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+
+            th { //applying additional styling to th that td doesn't have
+                background-color: #f0f0f0;
+                color: #333;
+
+            }
+        }
+    }
+
+    a {
+        display: inline-block;
+        padding: 8px 16px;
+        margin: 5px;
+        border-radius: 20px;
+        background-color: $primary_color;
+        color: #fff;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+
+        &:hover{ // "and anchor tag hover"
+            background-color: $primary_hover_color;
+        }
+    }
+
+    input {
+        padding: 10px;
+        margin: 5px;
+        border: solid 1px;
+        border-radius: 5px;
+    }
+
+    #btn_add { // #->id, id as btn_add
+        background-color: $success_color;
+        color: #fff;
+        cursor: pointer;
+
+        &:hover {
+            background-color: $success_hover_color;
+        }
+    }
+
+}

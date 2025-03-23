@@ -1,0 +1,39 @@
+{% extends 'base.html' %} <!--importing the base.html template and styling-->
+
+<!-- block->syntax 'head'(name we gave) and endblock->syntax, we imported from base.html file -->
+{% block head %}
+<title>Task Samsh</title>
+{% endblock %}
+
+
+{% block body %}
+<div class="content">
+    <h1>Task Smash 2.0</h1>
+    {% if tasks | length < 1 %} <!--return statement of else in index() of app.py tasks var created newly-->
+    <h3>There are no tasks... Create One here!</h3>
+    {% else %}
+    <table>
+        <tr>
+            <th>Task</th>
+            <th>Added</th>
+            <th>Actions</th>
+        </tr>
+        {% for task in tasks %}
+        <tr>
+            <td>{{ task.content }}</td> <!--going through a for loop and getting the content of each task-->
+            <td>{{ task.created.strftime("%Y-%m-%d") }}</td> <!--strftime strips the time away-->
+            <td>
+                <a href="/delete/{{task.id}}">Delete</a> <!--creating a delete button with href link which takes to different page to delete that task ids-->
+                </br>
+                <a href="/edit/{{task.id}}">Edit</a>
+            </td>
+        </tr>
+        {% endfor %} <!--just like ending the block, we are ending for loop-->
+    </table>
+    {% endif %} <!--ending the if loop-->
+    <form action = "/" method="POST"> <!--posting the content in homepage(/) when we write something-->
+        <input type="text" name="content" id="content">
+        <input type="submit" value="Add Task" id="btn_add">
+    </form>
+</div>
+{% endblock %}
